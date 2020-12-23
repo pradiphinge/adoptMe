@@ -1,0 +1,2 @@
+export const CHANGE_LOCATION = "CHANGE_LOCATION";
+export const CHANGE_THEME = "CHANGE_THEME";

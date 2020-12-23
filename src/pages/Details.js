@@ -4,8 +4,9 @@ import { LoadingOutlined } from "@ant-design/icons";
 import Modal from "../components/Modal";
 import Carousels from "../components/Carousels";
 import ErrorBoundary from "../ErrorBoundary";
-import ThemeContext from "../ThemeContext";
+import { connect } from "react-redux";
 import { navigate } from "@reach/router";
+import PropTypes from "prop-types";
 
 class Details extends React.Component {
   // Hooks not allowed in class components
@@ -60,16 +61,13 @@ class Details extends React.Component {
         <div className="">
           <h1>{name}</h1>
           <h2>{`${animal} - ${breed} - ${location}`}</h2>
-          <ThemeContext.Consumer>
-            {(themeHook) => (
-              <button
-                style={{ backgroundColor: themeHook[0] }}
-                onClick={this.toggleModal}
-              >
-                Adopt {name}
-              </button>
-            )}
-          </ThemeContext.Consumer>
+
+          <button
+            style={{ backgroundColor: this.props.storeTheme }}
+            onClick={this.toggleModal}
+          >
+            Adopt {name}
+          </button>
           <p>{description}</p>
           {showModal && (
             <Modal>
@@ -87,10 +85,17 @@ class Details extends React.Component {
     );
   }
 }
+
+Details.propTypes = {
+  storeTheme: PropTypes.string.isRequired,
+};
+const mapStateToProps = ({ storeTheme }) => ({ storeTheme });
+
+const WrappedDetails = connect(mapStateToProps)(Details);
 export default function DetailsWithErrorBoundary(props) {
   return (
     <ErrorBoundary>
-      <Details {...props} />
+      <WrappedDetails {...props} />
     </ErrorBoundary>
   );
 }

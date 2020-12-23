@@ -1,14 +1,14 @@
-import { useState } from "react";
+import React from "react";
 import SearchParams from "./components/SearchParams";
 import { Router } from "@reach/router";
 import Details from "./pages/Details";
 import Header from "./components/Header";
-import ThemeContext from "./ThemeContext";
+import { Provider } from "react-redux";
+import store from "./redux/store";
 
 function App() {
-  const themeHook = useState("darkblue");
   return (
-    <ThemeContext.Provider value={themeHook}>
+    <Provider store={store}>
       <Header />
       <div className="home-page">
         <Router>
@@ -16,7 +16,7 @@ function App() {
           <Details path="/details/:id" />
         </Router>
       </div>
-    </ThemeContext.Provider>
+    </Provider>
   );
 }
 

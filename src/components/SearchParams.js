@@ -1,20 +1,28 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState } from "react";
+import { connect } from "react-redux";
 import pet, { ANIMALS } from "@frontendmasters/pet";
 import useDropdown from "../hooks/useDropdown";
 import Results from "./Results";
-import ThemeContext from "../ThemeContext";
-const SearchParams = () => {
-  const [location, setLocation] = useState("Seattle, WA");
-  const [animal, , AnimalDropdown] = useDropdown("Animal", "dog", ANIMALS);
+import PropTypes from "prop-types";
+import changeTheme from "../redux/actionCreators/changeTheme";
+import changeLocation from "../redux/actionCreators/changeLocation";
 
+const SearchParams = ({
+  storeTheme,
+  storeLocation,
+  changeLocation,
+  changeTheme,
+}) => {
+  const [location, setLocation] = useState(storeLocation);
+  const [animal, , AnimalDropdown] = useDropdown("Animal", "dog", ANIMALS);
+  const [theme, setTheme] = useState(storeTheme);
   const [breeds, setBreeds] = useState([]);
   const [breed, setBreed, BreedDropdown] = useDropdown("Breed", "", breeds);
 
   const [pets, setPets] = useState([]);
 
-  const [theme, setTheme] = useContext(ThemeContext);
-
   async function requestPets() {
+    changeLocation(location);
     const { animals } = await pet.animals({
       location,
       breed,
@@ -24,8 +32,10 @@ const SearchParams = () => {
   }
 
   useEffect(() => {
+    console.log("inside useEffect");
     setBreeds([]);
     setBreed("");
+
     if (animal) {
       pet
         .breeds(animal)
@@ -38,7 +48,7 @@ const SearchParams = () => {
           console.log(err);
         });
     }
-  }, [animal, setBreed, setBreeds]);
+  }, [animal, setBreed, setBreeds, setLocation, storeLocation]);
 
   return (
     <div className="search-params">
@@ -48,13 +58,29 @@ const SearchParams = () => {
           requestPets();
         }}
       >
-        <label htmlFor="location">Location</label>
+        {/* <label htmlFor="location">Location</label>
         <input
           type="text"
           id="location"
           value={location}
           onChange={(e) => setLocation(e.target.value)}
-        />
+        /> */}
+        <label htmlFor="theme">Location</label>
+        <select
+          name="location"
+          id="location"
+          value={location || storeLocation}
+          onChange={(e) => {
+            setLocation(e.target.value);
+          }}
+          onBlur={(e) => {
+            setLocation(e.target.value);
+          }}
+        >
+          <option value="San Fransisco, CA">San Fransisco, CA</option>
+          <option value="Seattle, WA">Seattle, WA</option>
+        </select>
+
         <AnimalDropdown />
         <BreedDropdown />
 
@@ -63,8 +89,14 @@ const SearchParams = () => {
           name="theme"
           id="theme"
           value={theme}
-          onChange={(e) => setTheme(e.target.value)}
-          onBlur={(e) => setTheme(e.target.value)}
+          onChange={(e) => {
+            setTheme(e.target.value);
+            changeTheme(e.target.value);
+          }}
+          onBlur={(e) => {
+            setTheme(e.target.value);
+            changeTheme(e.target.value);
+          }}
         >
           <option value="peru">Peru</option>
           <option value="darkblue">Dark Blue </option>
@@ -78,4 +110,17 @@ const SearchParams = () => {
   );
 };
 
-export default SearchParams;
+SearchParams.propTypes = {
+  storeTheme: PropTypes.string.isRequired,
+  storeLocation: PropTypes.string.isRequired,
+};
+const mapStateToProps = ({ storeTheme, storeLocation }) => ({
+  storeTheme,
+  storeLocation,
+});
+const mapDispatchToProps = (dispatch) => ({
+  changeTheme: (theme) => dispatch(changeTheme(theme)),
+  changeLocation: (location) => dispatch(changeLocation(location)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(SearchParams);
