@@ -7,7 +7,7 @@ const { Item } = Menu;
 
 const Header = () => {
   const [current, setCurrent] = useState("home");
-  const handleClick = (e) => setCurrent(e.key);
+  const handleClick = (e: any) => setCurrent(e.key);
 
   return (
     <Menu onClick={handleClick} selectedKeys={[current]} mode="horizontal">

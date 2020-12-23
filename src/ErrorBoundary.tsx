@@ -1,14 +1,14 @@
-import React, { Component } from "react";
+import React, { Component, ErrorInfo } from "react";
 import { Link, navigate } from "@reach/router";
 
 class ErrorBoundary extends Component {
   state = { hasError: false, redirect: false };
-  timer = null;
+  timer: any = null;
   static getDerivedStateFromError() {
     return { hasError: true };
   }
 
-  componentDidCatch(error, info) {
+  componentDidCatch(error: Error, info: ErrorInfo) {
     console.error("ErrorBoundary caught an error", error, info);
   }
 

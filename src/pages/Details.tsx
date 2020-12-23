@@ -1,13 +1,13 @@
 import React from "react";
-import pet from "@frontendmasters/pet";
+import pet, { Photo } from "@frontendmasters/pet";
 import { LoadingOutlined } from "@ant-design/icons";
 import Modal from "../components/Modal";
 import Carousels from "../components/Carousels";
 import ErrorBoundary from "../ErrorBoundary";
 import ThemeContext from "../ThemeContext";
-import { navigate } from "@reach/router";
+import { navigate, RouteComponentProps } from "@reach/router";
 
-class Details extends React.Component {
+class Details extends React.Component<RouteComponentProps<{ id: string }>> {
   // Hooks not allowed in class components
   //   constructor(props) {
   //     super(props);
@@ -16,11 +16,25 @@ class Details extends React.Component {
   //       loading: true,
   //     };
   //   }
-  state = { loading: true, showModal: false };
+  state = {
+    loading: true,
+    showModal: false,
+    url: "",
+    name: "",
+    animal: "",
+    location: "",
+    description: "",
+    media: [] as Photo[],
+    breed: "",
+  };
   componentDidMount() {
     // throw new Error("lol");
+    if (!this.props.id) {
+      navigate("/");
+      return;
+    }
     pet
-      .animal(this.props.id)
+      .animal(+this.props.id)
       .then(({ animal }) => {
         this.setState({
           url: animal.url,
@@ -61,9 +75,9 @@ class Details extends React.Component {
           <h1>{name}</h1>
           <h2>{`${animal} - ${breed} - ${location}`}</h2>
           <ThemeContext.Consumer>
-            {(themeHook) => (
+            {([theme]) => (
               <button
-                style={{ backgroundColor: themeHook[0] }}
+                style={{ backgroundColor: theme }}
                 onClick={this.toggleModal}
               >
                 Adopt {name}
@@ -87,7 +101,9 @@ class Details extends React.Component {
     );
   }
 }
-export default function DetailsWithErrorBoundary(props) {
+export default function DetailsWithErrorBoundary(
+  props: RouteComponentProps<{ id: string }>
+) {
   return (
     <ErrorBoundary>
       <Details {...props} />

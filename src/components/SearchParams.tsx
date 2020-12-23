@@ -1,16 +1,23 @@
-import React, { useEffect, useState, useContext } from "react";
-import pet, { ANIMALS } from "@frontendmasters/pet";
+import React, {
+  useEffect,
+  useState,
+  useContext,
+  FunctionComponent,
+} from "react";
+import pet, { ANIMALS, Animal } from "@frontendmasters/pet";
 import useDropdown from "../hooks/useDropdown";
 import Results from "./Results";
 import ThemeContext from "../ThemeContext";
-const SearchParams = () => {
+import { RouteComponentProps } from "@reach/router";
+
+const SearchParams: FunctionComponent<RouteComponentProps> = () => {
   const [location, setLocation] = useState("Seattle, WA");
   const [animal, , AnimalDropdown] = useDropdown("Animal", "dog", ANIMALS);
 
-  const [breeds, setBreeds] = useState([]);
+  const [breeds, setBreeds] = useState([] as string[]);
   const [breed, setBreed, BreedDropdown] = useDropdown("Breed", "", breeds);
 
-  const [pets, setPets] = useState([]);
+  const [pets, setPets] = useState([] as Animal[]);
 
   const [theme, setTheme] = useContext(ThemeContext);
 
@@ -26,6 +33,7 @@ const SearchParams = () => {
   useEffect(() => {
     setBreeds([]);
     setBreed("");
+
     if (animal) {
       pet
         .breeds(animal)
